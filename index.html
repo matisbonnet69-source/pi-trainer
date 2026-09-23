@@ -23,45 +23,42 @@
       radial-gradient(circle at 15% 0%, rgba(139,124,255,0.08), transparent 40%),
       radial-gradient(circle at 85% 100%, rgba(72,217,194,0.05), transparent 40%);
     color: #f8fafc;
-    touch-action: manipulation; /* Prevents double-tap zoom on mobile */
+    touch-action: manipulation;
   }
 
-  /* Custom Scrollbar for the pi line */
-  .hide-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  .hide-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
+  .hide-scrollbar::-webkit-scrollbar { display: none; }
+  .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-  /* Animations */
+  /* Animations existantes */
   @keyframes breathe {
     0%, 100% { transform: translateY(0); opacity: 1; }
     50% { transform: translateY(-3px); opacity: 0.8; box-shadow: 0 10px 20px -10px var(--accent); }
   }
-  .animate-breathe {
-    animation: breathe 1.5s ease-in-out infinite;
-  }
+  .animate-breathe { animation: breathe 1.5s ease-in-out infinite; }
 
   @keyframes popIn {
     from { opacity: 0; transform: scale(0.95) translateY(10px); }
     to { opacity: 1; transform: scale(1) translateY(0); }
   }
-  .animate-pop {
-    animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
+  .animate-pop { animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
   @keyframes shake {
     0%, 100% { transform: translateX(0); }
     20%, 60% { transform: translateX(-5px); }
     40%, 80% { transform: translateX(5px); }
   }
-  .animate-shake {
-    animation: shake 0.4s ease-in-out;
+  .animate-shake { animation: shake 0.4s ease-in-out; }
+
+  /* NOUVELLE ANIMATION : Effet "Pop" satisfaisant pour chaque chiffre */
+  @keyframes digitPop {
+    0% { transform: scale(0.5) translateY(10px); opacity: 0; color: var(--accent2); }
+    70% { transform: scale(1.15) translateY(-2px); opacity: 1; }
+    100% { transform: scale(1) translateY(0); opacity: 1; color: #cbd5e1; }
+  }
+  .digit-pop {
+    animation: digitPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
   }
 
-  /* Keypad Button styling */
   .numpad-btn {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -73,10 +70,7 @@
     background: rgba(255, 255, 255, 0.15);
   }
   @media (hover: hover) {
-    .numpad-btn:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.2);
-    }
+    .numpad-btn:hover { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.2); }
   }
 </style>
 </head>
@@ -95,33 +89,23 @@
 
     <!-- Stats Container -->
     <div class="flex flex-wrap gap-2 md:gap-3 w-full lg:w-auto justify-center">
-      
-      <!-- Record (High Score) -->
       <div class="flex-1 min-w-[75px] bg-white/5 border border-white/10 backdrop-blur-md rounded-xl px-3 py-2 text-center relative overflow-hidden shadow-lg shadow-amber-500/5 border-amber-500/20">
         <div class="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-amber-700/5 pointer-events-none"></div>
         <span class="block text-[9px] sm:text-[10px] uppercase tracking-wider text-amber-400/80 font-bold mb-1 relative z-10">Record</span>
         <span id="statRecord" class="block text-lg sm:text-xl font-bold text-amber-400 leading-none relative z-10">0</span>
       </div>
-
-      <!-- Position -->
       <div class="flex-1 min-w-[75px] bg-white/5 border border-white/10 backdrop-blur-md rounded-xl px-3 py-2 text-center">
         <span class="block text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Pos</span>
         <span id="statPosition" class="block text-lg sm:text-xl font-bold text-white leading-none">1</span>
       </div>
-      
-      <!-- Chrono (Timer) -->
       <div class="flex-1 min-w-[75px] bg-white/5 border border-white/10 backdrop-blur-md rounded-xl px-3 py-2 text-center">
         <span class="block text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Chrono</span>
         <span id="statChrono" class="block text-lg sm:text-xl font-bold text-white leading-none font-mono tracking-tight">00:00</span>
       </div>
-
-      <!-- Errors -->
       <div class="flex-1 min-w-[75px] bg-white/5 border border-white/10 backdrop-blur-md rounded-xl px-3 py-2 text-center">
         <span class="block text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Erreurs</span>
         <span id="statErrors" class="block text-lg sm:text-xl font-bold text-white leading-none">0</span>
       </div>
-      
-      <!-- Accuracy -->
       <div class="flex-1 min-w-[75px] bg-white/5 border border-white/10 backdrop-blur-md rounded-xl px-3 py-2 text-center">
         <span class="block text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Précision</span>
         <span id="statAccuracy" class="block text-lg sm:text-xl font-bold text-white leading-none">100%</span>
@@ -143,13 +127,10 @@
         Tu as tapé <span id="errWrong" class="font-extrabold text-red-400 text-3xl mx-1 bg-red-500/10 px-3 py-1 rounded-lg"></span>, 
         mais c'était un <span id="errRight" class="font-extrabold text-green-400 text-3xl mx-1 bg-green-500/10 px-3 py-1 rounded-lg"></span>
       </p>
-      
-      <!-- Ghost preview of next digits -->
       <div class="mt-6 p-4 bg-black/40 rounded-xl border border-white/5">
         <div class="text-xs text-slate-400 uppercase tracking-widest mb-2 font-semibold">Prochaines décimales</div>
         <div id="ghostPreview" class="text-2xl font-mono tracking-[0.2em]"></div>
       </div>
-
       <div class="mt-8 flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
         <button id="btnContinue" class="px-8 py-4 bg-white text-slate-950 text-lg font-bold rounded-2xl hover:-translate-y-1 transition-transform shadow-xl shadow-white/10 active:translate-y-0 w-full sm:w-auto">Continuer</button>
         <button id="btnRestart" class="px-8 py-4 bg-slate-800 text-white text-lg font-bold rounded-2xl border border-slate-700 hover:-translate-y-1 transition-transform active:translate-y-0 w-full sm:w-auto">Recommencer</button>
@@ -158,15 +139,9 @@
 
     <!-- Digits Display Area -->
     <div id="displayArea" class="bg-slate-900/60 border border-slate-800 backdrop-blur-lg rounded-3xl p-6 md:p-10 shadow-2xl flex flex-col items-center min-h-[220px] justify-center transition-all duration-300">
-      
-      <!-- Scrolling Pi Line -->
       <div class="w-full overflow-x-auto hide-scrollbar flex items-end justify-start sm:justify-center py-4" id="piLineContainer">
-        <div id="piLine" class="flex items-end gap-1 md:gap-2 px-4 transition-transform duration-300 ease-out">
-          <!-- Digits injected via JS -->
-        </div>
+        <div id="piLine" class="flex items-end gap-1 md:gap-2 px-4 transition-transform duration-300 ease-out"></div>
       </div>
-
-      <!-- Progress Meter -->
       <div class="w-full max-w-md mt-8">
         <div class="flex justify-between text-xs font-semibold text-slate-500 mb-2 px-1 uppercase tracking-wider">
           <span>Progression</span>
@@ -176,15 +151,10 @@
           <div id="meterFill" class="h-full bg-gradient-to-r from-indigo-500 to-teal-400 w-0 transition-all duration-500 rounded-full shadow-[0_0_10px_rgba(72,217,194,0.5)]"></div>
         </div>
       </div>
-
     </div>
   </main>
 
   <footer class="w-full pb-8 pt-4 px-4 relative z-10" id="keypadArea">
-    <div class="max-w-[320px] mx-auto text-center mb-4">
-       <p class="text-sm text-slate-400">Utilise le clavier virtuel ou ton clavier physique.</p>
-    </div>
-    
     <div class="grid grid-cols-3 gap-3 max-w-[280px] mx-auto">
       <button class="numpad-btn text-3xl font-semibold text-white h-16 rounded-2xl" data-val="1">1</button>
       <button class="numpad-btn text-3xl font-semibold text-white h-16 rounded-2xl" data-val="2">2</button>
@@ -196,7 +166,6 @@
       <button class="numpad-btn text-3xl font-semibold text-white h-16 rounded-2xl" data-val="8">8</button>
       <button class="numpad-btn text-3xl font-semibold text-white h-16 rounded-2xl" data-val="9">9</button>
       <div class="h-16 flex items-center justify-center">
-        <!-- Restart Button inside keypad -->
         <button id="btnSmallRestart" class="text-slate-500 hover:text-white transition-colors" aria-label="Recommencer">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -211,18 +180,51 @@
   <script>
     const PI_DIGITS = "141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930381964428810975665933446128475648233786783165271201909145648566923460348610454326648213393607260249141273724587006606315588174881520920962829254091715364367892590360011330530548820466521384146951941511609433057270365759591953092186117381932611793105118548074462379962749567351885752724891227938183011949129833673362440656643086021394946395224737190702179860943702770539217176293176752384674818467669405132000568127145263560827785771342757789609173637178721468440901224953430146549585371050792279689258923542019956112129021960864034418159813629774771309960518707211349999998372978049951059731732816096318595024459455346908302642522308253344685035261931188171010003137838752886587533208381420617177669147303598253490428755468731159562863882353787593751957781857780532171226806613001927876611195909216420198938095257201065485863278865936153381827968230301952035301852968995773622599413891249721775283479131515574857242454150695950829533116861727855889075098381754637464939319255060400927701671139009848824012858361603563707660104710181942955596198946767837449448255379774726847104047534646208046684259069491293313677028989152104752162056966024058038150193511253382430035587640247496473263914199272604269922796782354781636009341721641219924586315030286182974555706749838505494588586926995690927210797509302955321165344987202755960236480665499119881834797753566369807426542527862551818417574672890977772793800081647060016145249192173217214772350141441973568548161361157352552133475741849468438523323907394143334547762416862518983569485562099219222184272550254256887671790494601653466804988627232791786085784383827967976681454100953883786360950680064225125205117392984896084128488626945604241965285022210661186306744278622039194945047123713786960956364371917287467764657573962413890865832645995813390478027590099465764078951269468398352595709825822620522489407726719478268482601476990902640136394437455305068203496252451749399651431429809190659250937221696461515709858387410597885959772975498930161753928468138268683868942774155991855925245953959431049972524680845987273644695848653836736222626099124608051243884390451244136549762780797715691435997700129616089441694868555848406353422072225828488648158456028506016842739452267467678895252138522549954666727823986456596116354886230577456498035593634568174324112515076069479451096596094025228879710893145669136867228748940560101503308617928680920874760917824938589009714909675985261365549781893129784821682998948722658804857564014270477555132379641451523746234364542858444795265867821051141354735739523113427166102135969536231442952484937187110145765403590279934403742007310578539062198387447808478489683321445713868751943506430218453191048481005370614680674919278191197939952061419663428754440643745123718192179998391015919561814675142691239748940907186494231961567945208095146550225231603881930142093762137855956638937787083039069792077346722182562599661501421503068038447734549202605414665925201497442850732518666002132434088190710486331734649651453905796268561005508106658796998163574736384052571459102897064140110971206280439039759515677157700420337869936007230558763176359421873125147120532928191826186125867321579198414848829164470609575270695722091756711672291098169091528017350671274858322287183520935396572512108357915136988209144421006751033467110314126711136990865851639831501970165151168517143765761835155650884909989859982387345528331635507647918535893226185489632132933089857064204675259070915481416549859461637180270981994309924488957571282890592323326097299712084433573265489382391193259746366730583604142813883032038249037589852437441702913276561809377344403070746921120191302033038019762110110044929321516084244485963766983895228684783123552658213144957685726243344189303968642624341077322697802807318915441101044682325271620105265227211166039666557309254711055785376346682065310989652691862056476931257058635662018558100729360659876486117910453348850346113657686753249441668039626579787718556084552965412665408530614344431858676975145661406800700237877659134401712749470420562230538994561314071127000407854733269939081454664645880797270826683063432858785698305235808933065757406795457163775254202114955761581400250126228594130216471550979259230990796547376125517656751357517829666454779174501129961489030463994713296210734043751895735961458901938971311179042978285647503203198691514028708085990480109412147221317947647772622414254854540332157185306142288137585043063321751829798662237172159160771669254748738986654949450114654062843366393790039769265672146385306736096571209180763832716641627488880078692560290228472104031721186082041900042296617119637792133757511495950156604963186294726547364252308177036751590673502350728354056704038674351362222477158915049530984448933309634087807693259939780541934144737744184263129860809988868741326047215695";
     
-    // Application State
     let cursor = 0;
     let errors = 0;
     let totalAttempts = 0;
     let isWaitingForError = false;
     
-    // Timer and Record State
     let timerInterval = null;
     let secondsElapsed = 0;
     let highScore = parseInt(localStorage.getItem("piTrainerRecord") || "0", 10);
 
-    // DOM Elements
+    // Initialisation Audio (sans fichiers externes !)
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const audioCtx = new AudioContext();
+
+    function playTick() {
+      if (!audioCtx) return;
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.05);
+      gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.1);
+    }
+
+    function playErrorSound() {
+       if (!audioCtx) return;
+       if (audioCtx.state === 'suspended') audioCtx.resume();
+       const osc = audioCtx.createOscillator();
+       const gain = audioCtx.createGain();
+       osc.type = 'sawtooth';
+       osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+       osc.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.2);
+       gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+       gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+       osc.connect(gain);
+       gain.connect(audioCtx.destination);
+       osc.start();
+       osc.stop(audioCtx.currentTime + 0.3);
+    }
+
     const piLine = document.getElementById("piLine");
     const statPosition = document.getElementById("statPosition");
     const statErrors = document.getElementById("statErrors");
@@ -243,7 +245,6 @@
     const btnRestart = document.getElementById("btnRestart");
     const btnSmallRestart = document.getElementById("btnSmallRestart");
 
-    // Initialize UI from state
     statRecord.textContent = highScore;
 
     function formatTime(totalSeconds) {
@@ -272,31 +273,29 @@
       statChrono.textContent = "00:00";
     }
 
-    function render() {
+    function render(wrongVal = null) {
       piLine.innerHTML = "";
-
-      // Show up to 12 previous digits to keep a good visual context
       const WINDOW_SIZE = 12;
       const start = Math.max(0, cursor - WINDOW_SIZE);
       
-      // If we are past the start, add a "..." indicator
       if (start > 0) {
         const ellipsis = document.createElement("div");
         ellipsis.className = "text-4xl text-slate-600 font-bold tracking-tighter pb-1 mr-2 opacity-50";
         ellipsis.textContent = "...";
         piLine.appendChild(ellipsis);
       } else {
-        // Only show the "3," when we are at the very beginning
         const prefix = document.createElement("div");
         prefix.className = "flex items-end text-white mr-1";
         prefix.innerHTML = `<span class="text-6xl md:text-7xl font-extrabold tracking-tighter leading-none">3</span><span class="text-5xl md:text-6xl font-bold pb-1">,</span>`;
         piLine.appendChild(prefix);
       }
 
-      // Render the historical correct digits in the window
       for (let i = start; i < cursor; i++) {
         const d = document.createElement("div");
         d.className = "flex flex-col items-center justify-end w-10 md:w-12";
+        // Ajout de l'animation pop uniquement sur le dernier chiffre validé
+        if (i === cursor - 1 && !wrongVal) d.classList.add("digit-pop");
+        
         d.innerHTML = `
           <span class="text-4xl md:text-5xl font-bold text-slate-300 mb-1">${PI_DIGITS[i]}</span>
           <span class="text-[10px] text-slate-500 font-mono">${i + 1}</span>
@@ -304,16 +303,23 @@
         piLine.appendChild(d);
       }
 
-      // Render the current expected position
       const current = document.createElement("div");
-      current.className = "flex flex-col items-center justify-end w-12 md:w-14 animate-breathe bg-white/5 border border-white/10 rounded-xl pb-1";
-      current.innerHTML = `
-        <span class="text-5xl md:text-6xl font-extrabold text-teal-300 mb-1 drop-shadow-md pb-1">_</span>
-        <span class="text-[10px] text-teal-500 font-mono font-bold">${cursor + 1}</span>
-      `;
+      if (wrongVal !== null) {
+        // Affichage temporaire du chiffre faux en rouge
+        current.className = "flex flex-col items-center justify-end w-12 md:w-14 animate-shake bg-red-500/20 border border-red-500/50 rounded-xl pb-1";
+        current.innerHTML = `
+          <span class="text-5xl md:text-6xl font-extrabold text-red-400 mb-1 drop-shadow-md">${wrongVal}</span>
+          <span class="text-[10px] text-red-400 font-mono font-bold">Erreur</span>
+        `;
+      } else {
+        current.className = "flex flex-col items-center justify-end w-12 md:w-14 animate-breathe bg-white/5 border border-white/10 rounded-xl pb-1";
+        current.innerHTML = `
+          <span class="text-5xl md:text-6xl font-extrabold text-teal-300 mb-1 drop-shadow-md pb-1">_</span>
+          <span class="text-[10px] text-teal-500 font-mono font-bold">${cursor + 1}</span>
+        `;
+      }
       piLine.appendChild(current);
 
-      // Keep it scrolled to the right
       requestAnimationFrame(() => {
         const container = document.getElementById("piLineContainer");
         container.scrollLeft = container.scrollWidth;
@@ -328,93 +334,81 @@
       
       const accuracy = totalAttempts ? Math.round((cursor / totalAttempts) * 100) : 100;
       statAccuracy.textContent = accuracy + "%";
-      // Change color based on accuracy
       statAccuracy.className = `block text-xl font-bold leading-none ${accuracy > 95 ? 'text-green-400' : accuracy > 80 ? 'text-yellow-400' : 'text-red-400'}`;
 
-      // Update Record if beaten
       if (cursor > highScore) {
         highScore = cursor;
         localStorage.setItem("piTrainerRecord", highScore.toString());
         statRecord.textContent = highScore;
-        
-        // Add a tiny animation to the record box when beaten
         statRecord.parentElement.classList.add("scale-105");
         setTimeout(() => statRecord.parentElement.classList.remove("scale-105"), 200);
       }
 
-      // Cap visually at 100 digits for the progress bar, but label shows real number
       const pct = Math.min(100, (cursor / 100) * 100); 
       meterFill.style.width = pct + "%";
       meterLabel.textContent = cursor.toLocaleString("fr-FR") + (cursor === 1 || cursor === 0 ? " décimale" : " décimales");
     }
 
     function handleInput(val) {
-      if (isWaitingForError) return; // Prevent input while error banner is showing
-      
+      if (isWaitingForError) return;
       if (!/^[0-9]$/.test(val)) return;
 
       totalAttempts++;
       const expected = PI_DIGITS[cursor];
 
       if (val === expected) {
-        // Success!
         cursor++;
-        
-        // Start or resume timer automatically on successful input
         startTimer();
-
+        playTick(); // Joue le son satisfaisant
         render();
         
-        // Optional: End of digits check (unlikely to reach for most, but just in case)
         if (cursor >= PI_DIGITS.length) {
           pauseTimer();
           alert("Incroyable ! Tu as terminé la séquence disponible.");
         }
       } else {
-        // Error
         errors++;
         isWaitingForError = true;
-        
-        // Pause Chrono on mistake
         pauseTimer();
+        playErrorSound(); // Joue le buzz d'erreur
         
-        // Setup error UI
-        errWrong.textContent = val;
-        errRight.textContent = expected;
+        // Affiche le chiffre faux en rouge immédiatement
+        render(val);
         
-        // Next few digits preview (ghost preview)
-        const nextDigits = PI_DIGITS.slice(cursor, cursor + 8);
-        ghostPreview.innerHTML = "";
-        [...nextDigits].forEach((d, i) => {
-           const span = document.createElement("span");
-           span.textContent = d;
-           span.style.opacity = Math.max(0.2, 1 - (i * 0.15));
-           ghostPreview.appendChild(span);
-        });
+        // Attente de 2 secondes avant d'afficher la bannière
+        setTimeout(() => {
+          errWrong.textContent = val;
+          errRight.textContent = expected;
+          
+          const nextDigits = PI_DIGITS.slice(cursor, cursor + 8);
+          ghostPreview.innerHTML = "";
+          [...nextDigits].forEach((d, i) => {
+             const span = document.createElement("span");
+             span.textContent = d;
+             span.style.opacity = Math.max(0.2, 1 - (i * 0.15));
+             ghostPreview.appendChild(span);
+          });
 
-        // Hide display area, show error banner
-        displayArea.classList.add("hidden");
-        keypadArea.classList.add("hidden", "md:block"); // keep disabled but visible on desktop layout or hide entirely
-        keypadArea.style.opacity = "0.5";
-        keypadArea.style.pointerEvents = "none";
-        
-        errorBanner.classList.remove("hidden");
-        errorBanner.classList.add("flex", "animate-pop");
-        
-        updateStats();
+          displayArea.classList.add("hidden");
+          keypadArea.classList.add("hidden", "md:block");
+          keypadArea.style.opacity = "0.5";
+          keypadArea.style.pointerEvents = "none";
+          
+          errorBanner.classList.remove("hidden");
+          errorBanner.classList.add("flex", "animate-pop");
+          
+          updateStats();
+        }, 2000);
       }
     }
 
-    // Virtual Keypad Listeners
     document.querySelectorAll(".numpad-btn").forEach(btn => {
       btn.addEventListener("click", (e) => {
-        // Add a small visual vibration if supported on mobile
         if(navigator.vibrate) navigator.vibrate(20);
         handleInput(e.target.dataset.val);
       });
     });
 
-    // Global Keyboard Listener (For Desktop)
     document.addEventListener("keydown", (e) => {
       if (isWaitingForError && e.key === "Enter") {
         resumeAfterError();
@@ -433,8 +427,7 @@
       keypadArea.style.opacity = "1";
       keypadArea.style.pointerEvents = "auto";
       
-      // Note: We deliberately DO NOT call startTimer() here.
-      // The timer will resume the moment they successfully type the next digit.
+      render(); // Repasse l'affichage à la normale avec le bon curseur
     }
 
     btnContinue.addEventListener("click", resumeAfterError);
@@ -445,13 +438,11 @@
       totalAttempts = 0;
       resetTimer();
       resumeAfterError();
-      render();
     }
     
     btnRestart.addEventListener("click", resetGame);
     btnSmallRestart.addEventListener("click", resetGame);
 
-    // Initial render
     window.addEventListener("load", render);
   </script>
   
